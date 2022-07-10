@@ -2,7 +2,7 @@ from asyncio.windows_events import NULL
 from turtle import width
 from numpy import number
 import pygame
-# ********************************
+# ******************************** settare movimento pedone in base al colore
 #comado di inizializzazione -----------------------------------------------------------------------------------------
 pygame.init()
 
@@ -24,7 +24,8 @@ RED = (255,0,0)                                   #colore scacco re
 size_cell = 75
 first_cell_x = 40
 first_cell_y = 40
-font = pygame.font.Font("freesansbold.ttf", 24)           #setta il font e la grandezza del testo
+font = pygame.font.Font("freesansbold.ttf", 14)           #setta il font e la grandezza del testo
+#                                 -MODIFICA 14->28  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\
 # - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
@@ -61,7 +62,7 @@ class cell(object):
 
     #rappresentazione oggetto, utile per il printf
     def __repr__(self):
-        s = "{Cell:(color: "+str(self.__color)+", posx: "+str(self.__posx)+", posy: "+str(self.__posy)+", piece: "+str(self.__piece)+")}"
+        s = "{Cell:(color: "+str(self.__color)+", posx: "+str(self.posx)+", posy: "+str(self.posy)+", piece: "+str(self.__piece)+")}"
         return s
 
     def get_posx(self):
@@ -75,6 +76,7 @@ class king(object):
     #costruttore( colore(True=White) )
     def __init__(self, color):
         self.color = color 
+        self.scacco = False
         #carica l'immagine corretta a seconda del colore del pezzo
         if color:
             self.king_piece = pygame.transform.scale(pygame.image.load('chess_img/wk.png'), (75, 75))
@@ -98,25 +100,41 @@ class king(object):
         if ( (abs(posx_1-posx_2)<=1) and (abs(posy_1-posy_2)<=1) ):
             return True
         
-        print("Moviemnto non valido")
-        print("> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posx_2)+")")
+        #print("Moviemnto non valido")
+        #print("> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posx_2)+")")
         return False
 
     #disegna l'immagene del pezzo
     def draw(self, posx, posy):
+        global pos_King
+
         win.blit(self.king_piece, self.set_coord(posx, posy))      #visualizza pezzo
 
+    #setta la variabile scacco
+    def set_scacco(self, sc):
+        self.scacco = sc
+        return self
+
+    #ritorna la variabile scacco
+    def get_scacco(self):
+        return self.scacco
+    
     #Ritorna true se colore=Bianco
     def get_color(self):
         return self.color
 
-    @staticmethod
+    @staticmethod    #posizione iniziale re asse x
     def get_posx():
         return 4
     
-    @staticmethod
+    @staticmethod    #posizione iniziale re asse y
     def get_posy():
         return 0
+
+    #rappresentazione oggetto, utile per il printf
+    def __repr__(self):
+        s = "{Piece:(type: King, color: "+str(self.color)+")}"
+        return s
 
 class Queen(object):
     #costruttore( colore(True=White) )
@@ -150,8 +168,8 @@ class Queen(object):
                 movement = -1
             for i in range((posy_1+movement), posy_2, movement):
                 if (chess_board[posx_1][i].get_piece() != NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
                     return False
             return True
 
@@ -162,8 +180,8 @@ class Queen(object):
                 movement = -1
             for i in range((posy_1+movement), posy_2, movement):
                 if (chess_board[posx_1][i].get_piece() != NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
                     return False
             return True
         
@@ -179,8 +197,8 @@ class Queen(object):
                 check_y = (posy_1+(movement*i))
                 #print("("+str(check_x)+","+str(check_y)+"), ",end="")
                 if (chess_board[check_x][check_y].get_piece() != NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
                     return False
             return True
         
@@ -193,13 +211,13 @@ class Queen(object):
                 check_x = (posx_1+(movement*i))
                 check_y = (posy_1+((-movement)*i))
                 if (chess_board[check_x][check_y].get_piece() != NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
                     return False
             return True
         
-        print("Moviemnto non valido")
-        print("> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posx_2)+")")
+        #print("Moviemnto non valido")
+        #print("> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posx_2)+")")
         return False
 
     #Ritorna true se colore=Bianco
@@ -209,6 +227,11 @@ class Queen(object):
     #disegna l'immagene del pezzo
     def draw(self, posx, posy):
         win.blit(self.king_piece, self.set_coord(posx, posy))      #visualizza pezzo
+    
+    #rappresentazione oggetto, utile per il printf
+    def __repr__(self):
+        s = "{Piece:(type: Queen, color: "+str(self.color)+")}"
+        return s
 
 class Rook(object):
     #costruttore( colore(True=White) )
@@ -242,8 +265,8 @@ class Rook(object):
                 movement = -1
             for i in range((posy_1+movement), posy_2, movement):
                 if (chess_board[posx_1][i].get_piece() != NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
                     return False
 
             return True
@@ -262,8 +285,8 @@ class Rook(object):
             return True
         
         
-        print("Moviemnto non valido")
-        print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
+        #print("Moviemnto non valido")
+        #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
         return False
 
     #Ritorna true se colore=Bianco
@@ -273,6 +296,11 @@ class Rook(object):
     #disegna l'immagene del pezzo
     def draw(self, posx, posy):
         win.blit(self.king_piece, self.set_coord(posx, posy))      #visualizza pezzo
+
+    #rappresentazione oggetto, utile per il printf
+    def __repr__(self):
+        s = "{Piece:(type: Rook, color: "+str(self.color)+")}"
+        return s
 
 class Knight(object):
     #costruttore( colore(True=White) )
@@ -301,8 +329,8 @@ class Knight(object):
         if ( (abs(posx_1 - posx_2)==2 and (abs(posy_1 - posy_2)==1)) or (abs(posx_1 - posx_2)==1 and (abs(posy_1 - posy_2)==2)) ):
             return True
         
-        print("Moviemnto non valido")
-        print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
+        #print("Moviemnto non valido")
+        #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
         return False
 
     #Ritorna true se colore=Bianco
@@ -312,6 +340,11 @@ class Knight(object):
     #disegna l'immagene del pezzo
     def draw(self, posx, posy):
         win.blit(self.king_piece, self.set_coord(posx, posy))      #visualizza pezzo
+
+    #rappresentazione oggetto, utile per il printf
+    def __repr__(self):
+        s = "{Piece:(type: Knight, color: "+str(self.color)+")}"
+        return s
 
 class Bishop(object):
     #costruttore( colore(True=White) )
@@ -350,8 +383,8 @@ class Bishop(object):
                 check_y = (posy_1+(movement*i))
                 #print("("+str(check_x)+","+str(check_y)+"), ",end="")
                 if (chess_board[check_x][check_y].get_piece() != NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
                     return False
             return True
         elif( ((posx_1 - posx_2) == (posy_2 - posy_1)) ):
@@ -363,15 +396,14 @@ class Bishop(object):
                 check_x = (posx_1+(movement*i))
                 check_y = (posy_1+((-movement)*i))
                 if (chess_board[check_x][check_y].get_piece() != NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(check_x)+","+str(check_y)+")")
                     return False
             return True 
         
-        print("Moviemnto non valido")
-        print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
+        #print("Moviemnto non valido")
+        #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
         return False
-
 
     #Ritorna true se colore=Bianco
     def get_color(self):
@@ -380,6 +412,11 @@ class Bishop(object):
     #disegna l'immagene del pezzo
     def draw(self, posx, posy):
         win.blit(self.king_piece, self.set_coord(posx, posy))      #visualizza pezzo
+
+    #rappresentazione oggetto, utile per il printf
+    def __repr__(self):
+        s = "{Piece:(type: Bishop, color: "+str(self.color)+")}"
+        return s
 
 class Pawn(object):
     #costruttore( colore(True=White) )
@@ -427,14 +464,14 @@ class Pawn(object):
             #verifica se c'è un pezzo nella cella di passaggio in caso di spostamento di 2 celle
             if(check==2):
                 if(chess_board[(posx_1)][(posy_1+c)].get_piece()!=NULL):
-                    print("Moviemnto non valido")
-                    print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(posx_1)+","+str(posy_1+c)+")")
+                    #print("Moviemnto non valido")
+                    #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+") err_in:pos("+str(posx_1)+","+str(posy_1+c)+")")
                     return False
             return True
 
         
-        print("Moviemnto non valido")
-        print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
+        #print("Moviemnto non valido")
+        #print("-> pos("+str(posx_1)+","+str(posy_1)+") -\-> pos("+str(posx_2)+","+str(posy_2)+")")
         return False
 
     #Ritorna true se colore=Bianco
@@ -444,6 +481,11 @@ class Pawn(object):
     #disegna l'immagene del pezzo
     def draw(self, posx, posy):
         win.blit(self.king_piece, self.set_coord(posx, posy))      #visualizza pezzo
+    
+    #rappresentazione oggetto, utile per il printf
+    def __repr__(self):
+        s = "{Piece:(type: Pawn, color: "+str(self.color)+")}"
+        return s
 #-------------------------------------- ******* ------------------------------------------------------
 
 
@@ -541,52 +583,185 @@ def color_select_cell(posx, posy):
         return YELLOW2
 
 #controlla se il re in pos(posx, posy) si trova in un situazione di scacco
-def check_scacco(posx, posy):
-    global chess_board
-
-    print("pos:"+str(posx)+", "+str(posy))
+def check_scacco(chess_board, posx, posy, color):
 
     #controlla l'asse verticale dal basso verso l'alto
-    print("\n\nVerticale1:")
     for i in range(0, (posy), 1):
-        print("pos:"+str(posx)+", "+str(posy-(i+1)), end=" - ")
-
+        tmp_piece = chess_board[posx][posy-(i+1)].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( posx, posy-(i+1), posx, posy)) ):
+                #print( "v) Scacco da ("+str(posx)+"), ("+str(posy-(i+1))+")" )
+                return True
+            else:
+                break
+            
     #controlla l'asse verticale dall'alto verso il basso
-    print("\n\nVerticale2:")
     for i in range(0, (7-posy), 1):
-        print("pos:"+str(posx)+", "+str(posy+(i+1)), end=" - ")
+        tmp_piece = chess_board[posx][posy+(i+1)].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( posx, posy+(i+1), posx, posy)) ):
+                #print( "v) Scacco da ("+str(posx)+"), ("+str(posy+(i+1))+")" )
+                return True
+            else:
+                break
 
     #controlla l'asse orizzontale da destra verso sinistra  ( [<-] )
-    print("\n\nOrizzontale1:")
     for i in range(0, (posx), 1):
-        print("pos:"+str(posx-(i+1))+", "+str(posy), end=" - ")
+        tmp_piece = chess_board[(posx-(i+1))][posy].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( (posx-(i+1)), posy, posx, posy)) ):
+                #print( "o) Scacco da ("+str((posx-(i+1)))+"), ("+str(posy)+")" )
+                return True
+            else:
+                break
 
     #controlla l'asse orizzontale da sinistra verso destra  ( [->] )
-    print("\n\nOrizzontale2:")
     for i in range(0, (7-posx), 1):
-        print("pos:"+str(posx+(i+1))+", "+str(posy), end=" - ")
+        tmp_piece = chess_board[(posx+(i+1))][posy].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( (posx+(i+1)), posy, posx, posy)) ):
+                #print( "o) Scacco da ("+str((posx+(i+1)))+"), ("+str(posy)+")" )
+                return True
+            else:
+                break
+
+    #controllo possibile attacco da un cavallo
+    segno1 = 1
+    segno2 = 1
+    for i in range(1, 9):
+        x = posx+( segno1 * (1+(i%2)) )
+        y = posy+( segno2 * (1+((i+1)%2)) )
+
+        #controlla che x,y appartengono alla matrice
+        if( (x>=0) and (x<8) and (y>=0) and (y<8)):
+            #print("("+str(x)+":"+str(segno1)+", "+str(y)+":"+str(segno2)+")", end="- " )
+            tmp_piece = chess_board[x][y].get_piece()
+            #controlla se c'è un pezzo nella cella selezionata
+            if( (tmp_piece!=NULL) ):
+                #controlla se in quella cella c'è un cavallo del colore opposto che può mangiare il re
+                if( (isinstance(tmp_piece, Knight)) and (tmp_piece.get_color() != color) and (tmp_piece.move( x, y, posx, posy)) ):
+                    return True
+
+        match (i//2):
+            case 1:
+                segno1 = -1
+                segno2 = -1
+            case 2:
+                segno1 = 1
+                segno2 = -1
+            case 3:
+                segno1 = -1
+                segno2 = 1
+
 
     #controlla la diagonale1_up dal basso verso l'alto ( [\] )
-    print("\n\nDiagonale1_up:")
-    for i in range(0, posx, 1):
-        print("pos:"+str(posx-(i+1))+", "+str(posy-(i+1)), end=" - ")
+    for i in range(0, min(posx, posy), 1):
+        tmp_piece = chess_board[(posx-(i+1))][(posy-(i+1))].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( (posx-(i+1)), (posy-(i+1)), posx, posy)) ):
+                #print( "d1) Scacco da ("+str((posx-(i+1)))+", "+str((posy-(i+1)))+")" )
+                return True
+            else:
+                break
 
     #controlla la diagonale1_down dall'alto verso il basso ( [\] )
-    print("\n\nDiagonale1_down:")
-    for i in range(0, (7-posx), 1):
-        print("pos:"+str(posx+(i+1))+", "+str(posy+(i+1)), end=" - ")
+    for i in range(0, ( min((7-posx),(7-posy)) ), 1):
+        tmp_piece = chess_board[(posx+(i+1))][(posy+(i+1))].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( (posx+(i+1)), (posy+(i+1)), posx, posy )) ):
+                #print( "d1) Scacco da ("+str((posx+(i+1)))+", "+str((posy+(i+1)))+")" )
+                return True
+            else:
+                break
     
-    #controlla la diagonale2_up dal basso verso l'alto ( [/] )
-    print("\n\nDiagonale2_up:")
-    for i in range(0, min(posx, posy), 1):
-        print("pos:"+str(posx+(i+1))+", "+str(posy-(i+1)), end=" - ")
+    #controlla la diagonale2_up dalL'alto verso il basso ( [<-/] )
+    for i in range(0, ( min((7-posx), posy) ), 1):
+        tmp_piece = chess_board[(posx+(i+1))][(posy-(i+1))].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( (posx+(i+1)), (posy-(i+1)), posx, posy )) ):
+                #print( "d2) Scacco da ("+str((posx+(i+1)))+"), ("+str((posy-(i+1)))+")" )
+                return True
+            else:
+                break
 
-    #controlla la diagonale2_down dall'alto verso il basso ( [/] )
-    print("\n\nDiagonale2_down:")
-    for i in range(1, (7-max(posx, posy)), 1):
-        print("pos:"+str(posx-i)+", "+str(posy+i), end=" - ")
+    #controlla la diagonale2_down dall'basso verso l'alto ( [/->] )
+    for i in range(0, (min(posx, (7-posy))), 1):
+        tmp_piece = chess_board[(posx-(i+1))][(posy+(i+1))].get_piece()
+        #controlla se c'è un pezzo nella cella selezionata
+        if( (tmp_piece != NULL)):
+            #controlla se il pezzo nella cella selezionata è del colore opposto a quello del re e se può mangiarlo
+            if( (tmp_piece.get_color() != color) and (tmp_piece.move( (posx-(i+1)), (posy+(i+1)), posx, posy )) ):
+                #print( "d22) Scacco da ("+str((posx-(i+1)))+"), ("+str((posy+(i+1)))+")" )
+                return True
+            else:
+                break
         
+    return False            
 
+#aggiorna le variabili che tengono traccia della posizione dei 2 re
+def update_pos_King(piece, posx, posy):
+    global pos_King
+    if( isinstance(piece, king) ):
+        if(piece.get_color()):
+            pos_King[0] = (posx, posy)
+        else:
+            pos_King[1] = (posx, posy)
+    
+#controlla se la mossa di un pezzo crea una situazione di scacco per il proprio re (nel caso annulla la mossa e restituisce: FALSE)
+def move_validation(cell1, cell2, tmp_piece_cell2, king_color, turn_color):
+    global chess_board, pos_King
+    king_switch = 1
+    if(king_color):
+        king_switch = 0
+
+
+    #controlla se si è creata una situazione di scacco per il re king_color
+    scacco = check_scacco(chess_board, pos_King[king_switch][0], pos_King[king_switch][1], king_color)
+    if(scacco):
+        #controlla se il movimento di un pezzo causa scacco al proprio re
+        if( king_color == turn_color ):
+            cell1.set_color(NULL)                 #deseleziona cella1
+            cell2.set_color(NULL)                 #deseleziona cella2
+            cell1.set_piece(cell2.get_piece())    #copia il pezzo in cella2 --> cella1
+            cell2.set_piece(tmp_piece_cell2)      #ripristina il pezzo precedente in cella2
+            #controlla se il pezzo psostato era un re, nel caso aggiorna le variabili che ne tengono traccia
+            update_pos_King(cell1.get_piece(), cell1.posx, cell1.posy)
+            return False
+
+        #situazione dove un pezzo ha messo sotto scacco il re avversario
+        else:
+            if(chess_board[(pos_King[(1+king_switch)%2][0])][(pos_King[(1+king_switch)%2][1])].get_piece().get_scacco() == False):
+                chess_board[(pos_King[king_switch][0])][(pos_King[king_switch][1])].get_piece().set_scacco(True)
+            return True
+
+    #non c'è scacco
+    else:
+        chess_board[(pos_King[king_switch][0])][(pos_King[king_switch][1])].get_piece().set_scacco(False)
+        return True
+
+#verifica se un pedone ha raggiunto la promozione
+def pawn_to_queen(cell2):
+    #controlla se il pezzo appena spostato è un pedone
+    if( isinstance(cell2.get_piece(), Pawn) ):
+        #controlla se un pedone (bianco) è arrivato in fondo alla scacchiera
+        if( (cell2.posy == 0) ):
+            cell2.set_piece(Queen(True))
+        elif( (cell2.posy == 7) ):
+            cell2.set_piece(Queen(False))
 
 #Colora la cella della scacchiera di default
 def color_cell_chessboard(posx, posy):
@@ -599,8 +774,17 @@ def color_cell_chessboard(posx, posy):
     else:
         pygame.draw.rect(win, WHITE, (x, y, 75, 75))
 
+    #Stampa su ogni cella la propria coordinata
+    #number_cell = (font.render((str(posx)+","+str(posy)), True, (0,0,0)))
+    #win.blit(number_cell, (x, y))
+
+    piece = chess_board[posx][posy].get_piece()
+    if( (isinstance(piece,king)) and (piece.get_scacco()) ):
+        pygame.draw.rect(win, RED, (x, y, 75, 75))
+
 #stampa della scacchiera
 def draw_chessboard(chess_board, numbers, letters):
+    global win, first_cell_x, first_cell_y
 
     number_x = first_cell_x/3                      #pos_x numeri
     number_y = first_cell_y + (size_cell/3)        #posy_ numeri
@@ -619,7 +803,6 @@ def draw_chessboard(chess_board, numbers, letters):
         for j,cell in enumerate(column):
             color_cell_chessboard(i, j)
             cell.draw()
-            
 
 #funzione che disegna il display
 def redraw(chess_board, numbers, letters):
@@ -644,6 +827,7 @@ set_chessboard(chess_board)                    #inizializza le celle della scacc
 insert_piece_init(chess_board)                 #inserisce i pezzi nella schacchiera
 pos_wKing = (4, 7)                             #posizione iniziale del re bianco
 pos_bKing = (4, 0)                             #posizione iniziale del re nero
+pos_King = [pos_wKing, pos_bKing]              #coppia che contiene le posizione dei due re
 scacco = False                                 #stato di scacco
 (numbers, letters) = set_text_chessboard()     #crea 2 array con numeri e lettere in formato font.render necessati per disegnare la scacchiera
 switch_mouse = True                            #variabile di supporto per gestire il click del mouse
@@ -652,14 +836,10 @@ turn_color = True                              #indica a quale colore tocca muov
 cell1 = chess_board[0][0]                      #variabile di supporto per lo spostamento dei pezzi  (inizializzata con valore generico solo per evitare un ulteriore controllo)
 cell2 = chess_board[0][0]                      #variabile di supporto per lo spostamento dei pezzi  ( '' '' '' )
 tmp_color_cell = WHITE                         #variabile temporanea per settare il colore di una cella
+highlighted_cells = [cell1, cell2]             #indica le celle selezionate
 
 
-
-check_scacco(4,3)
-
-
-
-while(False):
+while(run):
     clock.tick(30)                       #tempo di aggiornamento dell'immagine (FPS) 
 
     #controlla gli eventi
@@ -677,16 +857,13 @@ while(False):
 
             #controlla se non era già stata selezionata una cella
             if(select_cells==2):
-                #controlla che la cella selezionata abbia un pezzo e che il colore tale pezzo == turn_color
+                #controlla che la cella selezionata abbia un pezzo e che il colore di tale pezzo == turn_color
                 if(chess_board[posx][posy].get_piece() != NULL and chess_board[posx][posy].get_piece().get_color() == turn_color):
                     select_cells = 1                          #indica che è stata selezionata una cella
-                    cell1.set_color(NULL)                     #deseleziona la cella1 precedente
-                    cell2.set_color(NULL)                     #deseleziona la cella2 precedente
                     cell1 = chess_board[posx][posy]           #cella1 = cella indicata dal cursore
-                    tmp_color_cell = color_select_cell(cell1.get_posx(), cell1.get_posy())
+                    tmp_color_cell = color_select_cell(cell1.get_posx(), cell1.get_posy())   #ritorna il tipo di colore per evidenziare la cella
                     cell1.set_color(tmp_color_cell)            #setta il colore della cella1 se è presente un pezzo
                 
-
             #caso in cui era già stata selezionata una cella
             else:
                 select_cells = 2                           #indica che sono state selezionate 2 celle
@@ -694,41 +871,57 @@ while(False):
 
                 #controlla che cella di partenza e di destinazione siano diverse
                 if( (cell1.posx != cell2.posx) or (cell1.posy != cell2.posy) ):
-                    #controlla se viene selezionato un'altro pezzo dello stesso colore
+                    #controlla se viene selezionato un'altro pezzo di colore = colore del turno
                     if(chess_board[posx][posy].get_piece() != NULL and chess_board[posx][posy].get_piece().get_color() == turn_color):
                         select_cells = 1                          #indica che è stata selezionata una cella
                         cell1.set_color(NULL)                     #deseleziona la cella1 precedente
                         cell1 = chess_board[posx][posy]           #cella1 = cella indicata dal cursore
-                        tmp_color_cell = color_select_cell(cell1.get_posx(), cell1.get_posy())
-                        cell1.set_color(tmp_color_cell)                   #setta il colore della cella1 se è presente un pezzo
+                        tmp_color_cell = color_select_cell(cell1.get_posx(), cell1.get_posy())    #ritorna il tipo di colore per evidenziare la cella
+                        cell1.set_color(tmp_color_cell)           #setta il colore della cella1 se è presente un pezzo
 
                     #controlla che il pezzo in cella1 può spostarsi in cella2
                     elif(cell1.get_piece().move(cell1.posx, cell1.posy, cell2.posx, cell2.posy)):
-                        tmp_color_cell = color_select_cell(cell2.get_posx(), cell2.get_posy())
-                        cell2.set_color(tmp_color_cell)            #setta il colore della cella2 selezionata dal cursore
+                        tmp_color_cell = color_select_cell(cell2.posx, cell2.posy)   #ritorna il tipo di colore per evidenziare la cella
+                        cell2.set_color(tmp_color_cell)            #evidenzia la cella2 selezionata dal cursore
+                        tmp_piece_cell2 = cell2.get_piece()        #salva il pezzo contenuto in cella2
                         cell2.set_piece(cell1.get_piece())         #copia il pezzo in cella1 --> cella2
                         cell1.set_piece(NULL)                      #elimina il pezzo in cella1
-                        turn_color = not(turn_color)               #cambia turno
 
-                        #controlla se il pezzo appena spostato è un pedone
-                        if( isinstance(cell2.get_piece(), Pawn) ):
-                            #controlla se un pedone (bianco) è arrivato in fondo alla scacchiera
-                            if( (cell2.posy == 0) ):
-                                cell2.set_piece(Queen(True))
-                            elif( (cell2.posy == 7) ):
-                                cell2.set_piece(Queen(False))
+                        #controlla se il pezzo psostato era un re, nel caso aggiorna le variabili che ne tengono traccia
+                        update_pos_King(cell2.get_piece(), cell2.posx, cell2.posy)
+
+                        #se la mossa del bianco non è valida ripete il turno
+                        if( not(move_validation(cell1, cell2, tmp_piece_cell2, True, turn_color)) ):
+                            continue
+
+                        #se la mossa del nero non è valida ripete il turno
+                        if( not(move_validation(cell1, cell2, tmp_piece_cell2, False, turn_color)) ):
+                            continue
+
+                        #controlla se il pezzo spostato è un pedone ed ha raggiunto la promozione
+                        pawn_to_queen(cell2)
+
+                        #cambio selezione celle
+                        highlighted_cells[0].set_color(NULL)        #deseleziona la cella1 precedente
+                        highlighted_cells[1].set_color(NULL)        #deseleziona la cella1 precedente
+                        highlighted_cells[0] = cell1                #aggiorna highlighted cells
+                        highlighted_cells[1] = cell2                #aggiorna highlighted cells
+
+                         #cambia turno
+                        turn_color = not(turn_color)              
+                    
+                    #caso movimento pezzo non valido
                     else:
-                        cell1.set_color(NULL)
+                        cell1.set_color(NULL)              #deseleziona cella1
             
-            input = True    
-            switch_mouse = False                         #setta a False per evitare che con il mouse premuto esegua questo IF
-
+            input = True                                 #indica di aggiornare il display
+            switch_mouse = False                         #setta a False per evitare che con il mouse esegua ripetutamente la selezione
 
             #print(str((posx, posy)))
         
     #setta switch_mode=True quando il mouse viene rilasciato
     elif event.type == pygame.MOUSEBUTTONUP and not(switch_mouse):
-        switch_mouse = True                          
+        switch_mouse = True             
 
 
     #aggiorna solo se arriva qualche input

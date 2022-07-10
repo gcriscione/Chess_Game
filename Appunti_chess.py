@@ -105,6 +105,53 @@ class king(object):
         win.blit(self.king_piece, (self.x,self.y))      #visualizza pezzo
 
 
+#controlla se il re in pos(posx, posy) si trova in un situazione di scacco
+def check_scacco(posx, posy):
+    global chess_board
+
+    print("pos:"+str(posx)+", "+str(posy))
+
+    #controlla l'asse verticale dal basso verso l'alto
+    print("\n\nVerticale1:")
+    for i in range(0, (posy), 1):
+        print("pos:"+str(posx)+", "+str(posy-(i+1)), end=" - ")
+
+    #controlla l'asse verticale dall'alto verso il basso
+    print("\n\nVerticale2:")
+    for i in range(0, (7-posy), 1):
+        print("pos:"+str(posx)+", "+str(posy+(i+1)), end=" - ")
+
+    #controlla l'asse orizzontale da destra verso sinistra  ( [<-] )
+    print("\n\nOrizzontale1:")
+    for i in range(0, (posx), 1):
+        print("pos:"+str(posx-(i+1))+", "+str(posy), end=" - ")
+
+    #controlla l'asse orizzontale da sinistra verso destra  ( [->] )
+    print("\n\nOrizzontale2:")
+    for i in range(0, (7-posx), 1):
+        print("pos:"+str(posx+(i+1))+", "+str(posy), end=" - ")
+
+    #controlla la diagonale1_up dal basso verso l'alto ( [\] )
+    print("\n\nDiagonale1_up:")
+    for i in range(0, min(posx, posy), 1):
+        print("pos:"+str(posx-(i+1))+", "+str(posy-(i+1)), end=" - ")
+
+    #controlla la diagonale1_down dall'alto verso il basso ( [\] )
+    print("\n\nDiagonale1_down:")
+    for i in range(0, ( min((7-posx),(7-posy)) ), 1):
+        print("pos:"+str(posx+(i+1))+", "+str(posy+(i+1)), end=" - ")
+    
+    #controlla la diagonale2_up dal basso verso l'alto ( [/] )
+    print("\n\nDiagonale2_up:")
+    for i in range(0, ( min((7-posx), posy) ), 1):
+        print("pos:"+str(posx+(i+1))+", "+str(posy-(i+1)), end=" - ")
+
+    #controlla la diagonale2_down dall'alto verso il basso ( [/] )
+    print("\n\nDiagonale2_down:")
+    for i in range(0, (min(posx, (7-posy))), 1):
+        print("pos:"+str(posx-(i+1))+", "+str(posy+(i+1)), end=" - ")
+     
+
 
 
 
